@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #0A0A0A;
+  --bg-secondary: #111214;
+  --bg-surface: #17191B;
+  --bg-muted: #222528;
+  --text-primary: #F2F2F0;
+  --text-secondary: #9A9A96;
+  --accent-yellow: #F5C400;
+  --accent-yellow-bright: #FFD52A;
+  --accent-yellow-dark: #A98200;
+  --tech-gray: #5E6264;
+  
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    width: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    selection-background-color: var(--accent-yellow);
+    selection-color: #000;
+  }
+
+  /* Remove root container constraints from standard Vite template */
+  #root {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    border: none;
+  }
+}
+
+/* Technical typography font */
+.font-mono-tech {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Subtle smoky dark radial gradient for studio vehicle backdrop */
+.bg-studio-radial {
+  background: 
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(245, 196, 0, 0.05) 0%,
+      transparent 38%
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      #1e2124 0%,
+      #111214 45%,
+      #080808 100%
+    );
+}
+
+/* Glassmorphic luxury overlays */
+.glass-panel {
+  background: rgba(23, 25, 27, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-yellow {
+  background: rgba(245, 196, 0, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(245, 196, 0, 0.2);
+}
+
+/* Custom sleek scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A0A0A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #222528;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #F5C400;
+}
+
+/* Subtle technical scanline effect */
+.scanline-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
