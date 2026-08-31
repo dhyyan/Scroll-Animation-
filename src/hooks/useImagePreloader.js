@@ -45,20 +45,21 @@ export function useImagePreloader(totalFramesCount = 300) {
       loadFirstFrame();
     }
 
-    // 2. Preload remaining frames in background with concurrency limit
-    let loadedCount = 0;
+    // 2. Preload remaining frames (1 to 299) in background with concurrency limit
+    let loadedCount = 1;
 
     const loadRemainingFrames = async () => {
       const BATCH_SIZE = 12; // Controlled parallel loading to prevent network throttling
+      const remainingPaths = framePaths.slice(1);
       
-      for (let i = 0; i < framePaths.length; i += BATCH_SIZE) {
+      for (let i = 0; i < remainingPaths.length; i += BATCH_SIZE) {
         if (!isMounted) break;
 
-        const batch = framePaths.slice(i, i + BATCH_SIZE);
+        const batch = remainingPaths.slice(i, i + BATCH_SIZE);
         
         await Promise.all(
           batch.map(async (path, batchIdx) => {
-            const index = i + batchIdx;
+            const index = i + batchIdx + 1; // offset by 1 since we sliced frame 0
             const img = new Image();
             img.src = path;
 

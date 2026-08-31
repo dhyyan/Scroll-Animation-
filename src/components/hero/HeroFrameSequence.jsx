@@ -29,7 +29,7 @@ export default function HeroFrameSequence({ images, scrollYProgress, totalFrames
 
     const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
 
-    // 1. Recalculate & Cache Canvas Layout Dimensions (Triggered ONLY on Resize)
+    // 1. Recalculate & Cache Canvas Layout Dimensions (Triggered on Resize & Orientation Change)
     const updateDimensions = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const width = window.innerWidth;
@@ -41,13 +41,19 @@ export default function HeroFrameSequence({ images, scrollYProgress, totalFrames
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
 
-      // Standard 16:9 vehicle aspect ratio cover calculation
+      // Standard 16:9 vehicle aspect ratio cover / contain calculation
       const imgAspect = 16 / 9; // Default vehicle frame aspect ratio
       const canvasAspect = width / height;
 
       let drawWidth, drawHeight, offsetX, offsetY;
 
-      if (canvasAspect > imgAspect) {
+      // On mobile portrait screens (width < 768 or canvasAspect < 1), use responsive contain fit so full car is 100% visible
+      if (width < 768 || canvasAspect < 1) {
+        drawWidth = width * dpr;
+        drawHeight = (width / imgAspect) * dpr;
+        offsetX = 0;
+        offsetY = ((height * dpr) - drawHeight) / 2;
+      } else if (canvasAspect > imgAspect) {
         drawWidth = width * dpr;
         drawHeight = (width / imgAspect) * dpr;
         offsetX = 0;
@@ -74,12 +80,30 @@ export default function HeroFrameSequence({ images, scrollYProgress, totalFrames
       drawFrame(Math.round(currentFrameRef.current));
     };
 
-    // 2. High-Performance Frame Drawing Function (Zero DOM reads inside)
+    // 2. High-Performance Frame Drawing Function with ready-frame fallback for mobile networks
     const drawFrame = (frameIdx) => {
       if (!images || images.length === 0) return;
 
       const clampedIndex = Math.max(0, Math.min(frameIdx, totalFrames - 1));
-      const img = images[clampedIndex] || images[0];
+      let img = images[clampedIndex];
+
+      // Fallback search for nearest ready frame if target frame is downloading on mobile network
+      if (!img || !img.complete || img.naturalWidth === 0) {
+        for (let s = clampedIndex - 1; s >= 0; s--) {
+          if (images[s] && images[s].complete && images[s].naturalWidth !== 0) {
+            img = images[s];
+            break;
+          }
+        }
+        if (!img || !img.complete || img.naturalWidth === 0) {
+          for (let s = clampedIndex + 1; s < totalFrames; s++) {
+            if (images[s] && images[s].complete && images[s].naturalWidth !== 0) {
+              img = images[s];
+              break;
+            }
+          }
+        }
+      }
 
       if (!img) return;
 
@@ -97,8 +121,17 @@ export default function HeroFrameSequence({ images, scrollYProgress, totalFrames
       renderedFrameRef.current = clampedIndex;
     };
 
-    // 3. Hardware-Accelerated requestAnimationFrame Loop
+    // 3. Hardware-Accelerated requestAnimationFrame Loop with direct scroll progress polling
     const tick = () => {
+      // Direct scroll progress polling (Guarantees smooth response on mobile touch/inertia scroll)
+      if (scrollYProgress) {
+        const latestProgress = scrollYProgress.get();
+        if (typeof latestProgress === 'number' && !isNaN(latestProgress)) {
+          const targetIdx = Math.max(0, Math.min(Math.floor(latestProgress * (totalFrames - 1)), totalFrames - 1));
+          targetFrameRef.current = targetIdx;
+        }
+      }
+
       // Micro-lerp (0.35) for smooth scrolling without scroll lag
       const diff = targetFrameRef.current - currentFrameRef.current;
 
@@ -121,7 +154,7 @@ export default function HeroFrameSequence({ images, scrollYProgress, totalFrames
     updateDimensions();
     rafIdRef.current = requestAnimationFrame(tick);
 
-    // 4. Subscribe directly to Framer Motion scrollYProgress (Bypassing React State)
+    // 4. Subscribe directly to Framer Motion scrollYProgress
     const unsubscribeScroll = scrollYProgress.on('change', (latest) => {
       const targetIdx = Math.min(
         Math.floor(latest * (totalFrames - 1)),
@@ -130,19 +163,21 @@ export default function HeroFrameSequence({ images, scrollYProgress, totalFrames
       targetFrameRef.current = targetIdx;
     });
 
-    // 5. Debounced Resize Handler
+    // 5. Debounced Resize and Orientation Change Handler
     let resizeTimer;
     const handleResize = () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
         updateDimensions();
-      }, 100);
+      }, 50);
     };
 
     window.addEventListener('resize', handleResize, { passive: true });
+    window.addEventListener('orientationchange', handleResize, { passive: true });
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
       clearTimeout(resizeTimer);
       unsubscribeScroll();
       if (rafIdRef.current) {
@@ -159,7 +194,7 @@ export default function HeroFrameSequence({ images, scrollYProgress, totalFrames
       {/* Single 60 FPS HTML5 Canvas */}
       <canvas
         ref={canvasRef}
-        className="relative z-10 w-full h-full block object-cover translate-z-0 will-change-transform"
+        className="relative z-10 w-full h-full block object-cover translate-z-0 will-change-transform pointer-events-none"
       />
 
       {/* Subtle Vignette Overlay */}

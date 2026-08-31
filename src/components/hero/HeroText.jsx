@@ -75,13 +75,13 @@ function ChapterItem({ ch, scrollYProgress }) {
   return (
     <motion.div
       style={{ opacity, y }}
-      className={`absolute bottom-16 md:bottom-24 max-w-xl translate-z-0 will-change-transform ${
-        isRight ? 'right-6 md:right-16 text-right' : 'left-6 md:left-16 text-left'
+      className={`absolute bottom-12 md:bottom-24 max-w-[calc(100vw-2.5rem)] sm:max-w-xl translate-z-0 will-change-transform ${
+        isRight ? 'right-4 sm:right-8 md:right-16 text-right' : 'left-4 sm:left-8 md:left-16 text-left'
       }`}
     >
       {/* Chapter Label */}
       <div
-        className={`inline-flex items-center gap-2 mb-3 px-3 py-1 rounded bg-[#17191B]/80 border border-white/10 text-xs font-mono-tech tracking-widest text-[#F5C400] ${
+        className={`inline-flex items-center gap-2 mb-2 sm:mb-3 px-2.5 py-1 rounded bg-[#17191B]/90 border border-white/10 text-[10px] sm:text-xs font-mono-tech tracking-widest text-[#F5C400] ${
           isRight ? 'flex-row-reverse' : ''
         }`}
       >
@@ -90,7 +90,7 @@ function ChapterItem({ ch, scrollYProgress }) {
       </div>
 
       {/* Main Headline */}
-      <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-[0.06em] leading-[1.05] uppercase text-[#F2F2F0] drop-shadow-2xl">
+      <h1 className="text-2xl sm:text-4xl md:text-6xl font-extrabold tracking-[0.04em] sm:tracking-[0.06em] leading-[1.1] sm:leading-[1.05] uppercase text-[#F2F2F0] drop-shadow-2xl">
         <div>{ch.titleLine1}</div>
         <div className="text-transparent bg-clip-text bg-gradient-to-r from-[#F2F2F0] via-[#F5C400] to-[#FFD52A]">
           {ch.titleLine2}
@@ -98,7 +98,7 @@ function ChapterItem({ ch, scrollYProgress }) {
       </h1>
 
       {/* Supporting Description */}
-      <p className="mt-4 text-sm md:text-lg text-[#9A9A96] font-light tracking-wider leading-relaxed max-w-md">
+      <p className="mt-2 sm:mt-4 text-xs sm:text-base md:text-lg text-[#9A9A96] font-light tracking-wider leading-relaxed max-w-xs sm:max-w-md">
         {ch.sub}
       </p>
     </motion.div>
@@ -107,7 +107,7 @@ function ChapterItem({ ch, scrollYProgress }) {
 
 export default function HeroText({ scrollYProgress }) {
   return (
-    <div className="absolute inset-0 z-30 pointer-events-none flex flex-col justify-between p-6 md:p-12">
+    <div className="absolute inset-0 z-30 pointer-events-none flex flex-col justify-between p-4 sm:p-6 md:p-12">
       {chapters.map((ch) => (
         <ChapterItem key={ch.id} ch={ch} scrollYProgress={scrollYProgress} />
       ))}

@@ -26,8 +26,8 @@ export default function CinematicHero() {
 
       {/* Main 600vh Scroll Container */}
       <section ref={heroRef} className="relative w-full h-[600vh] bg-[#0A0A0A]">
-        {/* Sticky 100vh Viewport */}
-        <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col justify-between translate-z-0 will-change-transform">
+        {/* Sticky 100vh / 100dvh Viewport */}
+        <div className="sticky top-0 w-full h-screen h-[100dvh] overflow-hidden flex flex-col justify-between translate-z-0 will-change-transform">
           {/* HTML5 Canvas Frame Sequence (Driven via MotionValue & RAF loop) */}
           <HeroFrameSequence
             images={images}

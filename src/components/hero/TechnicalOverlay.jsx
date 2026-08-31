@@ -61,7 +61,7 @@ function AnnotationCallout({ item, scrollYProgress }) {
   return (
     <motion.div
       style={{ opacity, scale, left: item.left, top: item.top }}
-      className="absolute hidden md:flex items-center gap-3 transform -translate-x-1/2 -translate-y-1/2 translate-z-0 will-change-transform"
+      className="absolute flex items-center gap-2 md:gap-3 transform -translate-x-1/2 -translate-y-1/2 scale-75 sm:scale-90 md:scale-100 translate-z-0 will-change-transform pointer-events-none"
     >
       {/* Target Reticle */}
       <div className="relative flex items-center justify-center w-6 h-6">
